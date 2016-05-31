@@ -4,12 +4,13 @@ import { Task } from './task.model';
 import { EditTaskDetailsComponent } from './edit-task-details.component';
 import { NewTaskComponent } from './new-task.component';
 import {DonePipe} from './done.pipe';
+import {PriorityPipe} from './priority.pipe';
 
 @Component({
   selector: 'task-list',
   inputs: ['taskList'],
   outputs: ['onTaskSelect'],
-  pipes: [DonePipe],
+  pipes: [DonePipe, PriorityPipe],
   directives: [TaskComponent, EditTaskDetailsComponent, NewTaskComponent],
   template: `
   <select (change)="onChange($event.target.value)" class="filter">
@@ -17,7 +18,13 @@ import {DonePipe} from './done.pipe';
     <option value="done">Show Done</option>
     <option value="notDone" selected="selected">Show Not Done</option>
   </select>
-  <task-display *ngFor="#currentTask of taskList | done:filterDone"
+  <select (change)="onChangePriority($event.target.value)" class="filter">
+    <option value="all">Show All</option>
+    <option value="high" selected="selected">High Priority</option>
+    <option value="normal">Normal Priority</option>
+    <option value="low">Low Priority</option>
+  </select>
+  <task-display *ngFor="#currentTask of taskList | done:filterDone | priority:filterPriority"
     (click)="taskClicked(currentTask)"
     [class.selected]="currentTask === selectedTask"
     [task]="currentTask">
@@ -31,6 +38,7 @@ export class TaskListComponent {
   public onTaskSelect: EventEmitter<Task>;
   public selectedTask: Task;
   public filterDone: string = "notDone";
+  public filterPriority: string = "all";
   constructor() {
     this.onTaskSelect = new EventEmitter();
   }
@@ -42,12 +50,17 @@ export class TaskListComponent {
 
   createTask(description: string): void {
     this.taskList.push(
-      new Task(description, this.taskList.length)
+      new Task(description, this.taskList.length, "Low")
     );
   }
 
   onChange(filterOption) {
     this.filterDone = filterOption;
     console.log(this.filterDone);
+  }
+
+  onChangePriority(filterOption) {
+    this.filterPriority = filterOption;
+    console.log(this.filterPriority);
   }
 }

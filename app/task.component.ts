@@ -8,7 +8,7 @@ import { Task } from './task.model';
     <div>
       <input *ngIf="task.done" type="checkbox" checked (click)="toggleDone(false)"/>
       <input *ngIf="!task.done" type="checkbox" (click)="toggleDone(true)"/>
-      <label>{{ task.description }}</label>
+      <label>{{ task.description }}, {{ task.priority }}</label>
     </div>
     `
 })
@@ -17,5 +17,9 @@ export class TaskComponent {
   public task: Task;
   toggleDone(setState: boolean){
     this.task.done = setState;
+  }
+
+  changePriority(setPriority: string){
+    this.task.priority = setPriority;
   }
 }
